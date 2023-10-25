@@ -69,7 +69,25 @@ jobs:
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-        
+
+  deploy:
+
+    needs: createDockerImageAndPush
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: deploy to cluster
+      uses: kodermax/kubectl-aws-eks@main
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: ${{ env.REPOSITORY }}
+        IMAGE_TAG: ${{ github.sha }}
+      with:
+        args: set image deployment/$REPOSITORY-deplo $REPOSITORY=$REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+
+
   # deploy:
 
   #   needs: createDockerImageAndPush
