@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworldapp-deployment
+  namespace: snake
+  labels:
+    app: helloworldapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: helloworldapp
+  template:
+    metadata:
+      labels:
+        app: helloworldapp
+    spec:
+      containers:
+      - name: helloworldapp
+        image: 776604445685.dkr.ecr.us-east-2.amazonaws.com/desafioimages:0.0.1
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworldapp-service
+  namespace: snake
+spec:
+  selector:
+    app: helloworldapp
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
