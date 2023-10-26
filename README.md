@@ -16,6 +16,7 @@ Esta app debe estar expuesta a internet.
 - Como repositorio de codigo se uso [Github](https://github.com/)
 - El pipeline fue creado mediante [Github Actions](https://github.com/features/actions)
 - La imagen de la aplicacion es creada con [Docker](https://www.docker.com/)
+- Para ruteo y construccion del load  balancer hacia las app de cluster, se uso [NGINX Ingress Controller](https://docs.nginx.com/nginx-ingress-controller/s) 
 - El repositorio de imagenes Docker se uso [Elastic Container Registry](https://aws.amazon.com/ecr/) (ECR) de AWS 
 - El motor de Kubernetes que corre estas imagenes es [Elastic Kubernetes Service](https://aws.amazon.com/eks/) (EKS) de AWS 
 
@@ -33,6 +34,8 @@ Finalmente esta el archivo *.gitignore* para no subir al repositorio git archivo
 **test**: Esta carpeta contiene las pruebas unitarias de la aplicacion.
 
 **src**: Es el codigo fuente de la aplicacion.
+
+**k8s**: Esta carpeta tiene los archivos usados en los deployments de EKS.
 
 
 
@@ -95,17 +98,26 @@ Nota: El cambio de puerto desde 3000 a 80 no es necesario, pero se hizo por simp
 
 
 ## Creando el pipeline CI/CD
-Se creo un pipeline de acuerdo a los requerimientos, el cual tiene 3 trabajos (jobs) principales:
+Se creo un pipeline de CI/CD acuerdo a los requerimientos. Este tiene 3 trabajos (jobs) principales:
 
 1. **buildAndTest**: En esta etapa, se hace un checkout del codigo, se hace un npm ci (es como npm build pero mas orientado a automatizaciones puesto que hace un clean build) y luego ejecuta las pruebas unitarias.
 
 2. **createDockerImageAndPush**: Aca se hace un login a la cuenta de AWS se crea la imagen Docker, se taguea y pushea al registro ECR
 
-3. **deploy**: Este pipeline se conecta al cluster de EKS y despliega la imagen pusheada en el paso anterior.
+3. **deploy**: Este Job se conecta al cluster de EKS (crea el contexto de kubeconfig) y despliega la imagen pusheada en el paso anterior.
 
-### Creando el manifiesto de Kubernetes
-**TODO**
+Para gatillar el pipline se debe hacer un push al repositorio 'forkeado': https://github.com/RamonYanezOShee/BlueExpressDevExHiringTest/ , rama ramonyanez.
+
+### Carpeta k8s
+- *deployment.yaml*: es el manifiesto de deployment, tiene una componente dinamica que se va modificando con el ultimo tag de imagen construida.
+- *service.yaml*: es el manifiesto de servicio para el deployment de la aplicacion
+- *ingress.yaml*: este manifiesto genera un objeto de tipo ingress, el cual es leido por el ingress-controller para rutear las llamadas hacia el proxy reverso con los backends publicados. En este caso solo tenemos configurado la ruta */helloworldapp*.
+
+### Diagrama final de la solucion
+![Diagrama](/img/diagrama.io.jpg)
 
 ### Probando la aplicacion desde Internet
-**TODO**
+La URL externa para probar esta aplicacion es:
+
+**http://a338868de4f7f4bf9a2db73eb17692ec-648861445.us-east-2.elb.amazonaws.com/helloworldapp**
 
