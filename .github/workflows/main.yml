@@ -94,7 +94,7 @@ jobs:
     - name: Deploy to cluster
       id: cluster-deploy
       run: |
-        aws sts get-caller-identity
+        echo "El sha de github deberia ser: ${{ github.sha }}"
         kubectl get svc
 #        cat ~/.kube/config
 #        kubectl config view

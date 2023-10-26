@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: helloworldapp
-        image: 776604445685.dkr.ecr.us-east-2.amazonaws.com/helloworldapp:fa4d7b8b5c0a68dea482c04a8e78a8e40d2a416b
+        image: 776604445685.dkr.ecr.us-east-2.amazonaws.com/helloworldapp:<IMAGE_TAG>
         imagePullPolicy: Always
         ports:
         - name: http
