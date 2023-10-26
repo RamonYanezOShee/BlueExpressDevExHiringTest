@@ -87,11 +87,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-
-    - name: deploy to cluster
-      id: cluster-reploy
+    - name: Generate kubeconfig
+      id: cluster-config
       run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{env.EKS_CLUSTER }}
 
+    - name: Deploy to cluster
+      id: cluster-deploy
+      run: |
+        kubectl apply -f k8s/deployment.yaml
 
 
 
