@@ -95,8 +95,9 @@ jobs:
       id: cluster-deploy
       env:
         IMAGE_TAG: ${{ github.sha }}
-        DEPLOYMENT_FILE: "k8s/deployment"
+        DEPLOYMENT_FILE: "k8s/deployment.yaml"
       run: |
         echo "El sha de github deberia ser: $IMAGE_TAG"
         sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" $DEPLOYMENT_FILE
-        kubectl apply -f $DEPLOYMENT_FILE
+        cat $DEPLOYMENT_FILE
+#        kubectl apply -f $DEPLOYMENT_FILE
