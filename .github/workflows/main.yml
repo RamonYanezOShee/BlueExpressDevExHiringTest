@@ -8,88 +8,82 @@ on:
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
-  REPOSITORY: ${{ vars.REPOSITORY }}           # set this to your Amazon ECR repository name
-  # ECS_SERVICE: MY_ECS_SERVICE                 # set this to your Amazon ECS service name
-  EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}                 # set this to your Amazon ECS cluster name
-  # ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
-  #                                               # file, e.g. .aws/task-definition.json
-  # CONTAINER_NAME: MY_CONTAINER_NAME      
+  REPOSITORY: ${{ vars.REPOSITORY }}
+  EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}   
 
 jobs:
   
-#   buildAndTest:
+  buildAndTest:
 
-#     runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Use Node.js 18.x
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: 18.x
-#           cache: 'npm'
-#       - run: npm ci
-#       - run: npm run build --if-present
-#       - run: npm test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
 
-#   createDockerImageAndPush:
+  createDockerImageAndPush:
 
-#     needs: buildAndTest
+    needs: buildAndTest
     
-#     name: Build Docker Image and push it to ECR
-#     runs-on: ubuntu-latest
-
-#     steps:
-
-#     - name: Check out repo
-#       uses: actions/checkout@v3
-    
-#     - name: Configure AWS credentials
-#       uses: aws-actions/configure-aws-credentials@v4
-#       # with:
-#       #   role-to-assume: arn:aws:iam::486914095721:role/ecr_push_role
-#       #   aws-region: ap-southeast-2
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-region: ${{ env.AWS_REGION }}
-
-#     - name: Login to Amazon ECR
-#       id: login-ecr
-#       uses: aws-actions/amazon-ecr-login@v2
-
-#     - name: Build, tag, and push image to Amazon ECR
-#       id: build-image
-#       env:
-#         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#         REPOSITORY: ${{ env.REPOSITORY }}
-#         IMAGE_TAG: ${{ github.sha }}
-#       run: |
-#         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-#         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-#         echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-
-# # COMENTARIOS DE ACA PARA ARRIBA
-
-  deploy:
-
-    # needs: createDockerImageAndPush
+    name: Build Docker Image and push it to ECR
     runs-on: ubuntu-latest
 
     steps:
 
-    # No se si se tiene que configurar nuevamente las credenciales
-    # - name: Configure AWS credentials
-    #   uses: aws-actions/configure-aws-credentials@v4
-    #   with:
-    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     aws-region: ${{ env.AWS_REGION }}
+    - name: Check out repo
+      uses: actions/checkout@v3
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      # with:
+      #   role-to-assume: arn:aws:iam::486914095721:role/ecr_push_role
+      #   aws-region: ap-southeast-2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
 
-    # - name: Generate kubeconfig
-    #   id: cluster-config
-    #   run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{env.EKS_CLUSTER }}
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: ${{ env.REPOSITORY }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+
+  deploy:
+
+    needs: createDockerImageAndPush
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Generate kubeconfig
+      id: cluster-config
+      run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{env.EKS_CLUSTER }}
 
     - name: Deploy to cluster
       id: cluster-deploy
@@ -98,11 +92,7 @@ jobs:
         DEPLOYMENT_FILE: "k8s/deployment.yaml"
       run: |
         echo "El sha de github deberia ser: $IMAGE_TAG"
-        pwd
-
-
-#        cat ../../k8s/deployment.yaml
-
-#        sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" $DEPLOYMENT_FILE
-
-#        kubectl apply -f $DEPLOYMENT_FILE
+        ls
+        cat k8s/deployment.yaml
+        sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" k8s/deployment.yaml
+        kubectl apply -f k8s/deployment.yaml
