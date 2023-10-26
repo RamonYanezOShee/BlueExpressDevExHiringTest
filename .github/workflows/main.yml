@@ -80,16 +80,16 @@ jobs:
     steps:
 
     # No se si se tiene que configurar nuevamente las credenciales
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+    # - name: Configure AWS credentials
+    #   uses: aws-actions/configure-aws-credentials@v4
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ${{ env.AWS_REGION }}
 
-    - name: Generate kubeconfig
-      id: cluster-config
-      run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{env.EKS_CLUSTER }}
+    # - name: Generate kubeconfig
+    #   id: cluster-config
+    #   run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{env.EKS_CLUSTER }}
 
     - name: Deploy to cluster
       id: cluster-deploy
@@ -98,7 +98,10 @@ jobs:
         DEPLOYMENT_FILE: "k8s/deployment.yaml"
       run: |
         echo "El sha de github deberia ser: $IMAGE_TAG"
-        cat ../../k8s/deployment.yaml
+        pwd
+
+
+#        cat ../../k8s/deployment.yaml
 
 #        sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" $DEPLOYMENT_FILE
 
