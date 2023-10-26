@@ -90,7 +90,7 @@ jobs:
 
     - name: deploy to cluster
       id: cluster-reploy
-      run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER }}
+      run: aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{env.EKS_CLUSTER }}
 
 
 
