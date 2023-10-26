@@ -99,7 +99,7 @@ jobs:
       run: |
         echo "El sha de github deberia ser: $IMAGE_TAG"
         ls -ltr
-        cat $DEPLOYMENT_FILE
+#        cat $DEPLOYMENT_FILE
 #        sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" $DEPLOYMENT_FILE
 
 #        kubectl apply -f $DEPLOYMENT_FILE
