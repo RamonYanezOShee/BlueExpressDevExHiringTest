@@ -94,7 +94,9 @@ jobs:
     - name: Deploy to cluster
       id: cluster-deploy
       run: |
-        kubectl apply -f k8s/deployment.yaml
+        kubectl config view
+        kubectl get ns
+#       kubectl apply -f k8s/deployment.yaml
 
 
 
