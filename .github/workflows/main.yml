@@ -95,7 +95,7 @@ jobs:
       id: cluster-deploy
       run: |
         aws sts get-caller-identity
-        kubectl get svc
+        cat ~/.kube/config
 #        kubectl config view
 #        kubectl get svc
 #       kubectl apply -f k8s/deployment.yaml
