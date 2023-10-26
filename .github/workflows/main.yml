@@ -98,8 +98,8 @@ jobs:
         DEPLOYMENT_FILE: "k8s/deployment.yaml"
       run: |
         echo "El sha de github deberia ser: $IMAGE_TAG"
-        ls -ltr
-#        cat $DEPLOYMENT_FILE
+        cat k8s/deployment.yaml
+
 #        sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" $DEPLOYMENT_FILE
 
 #        kubectl apply -f $DEPLOYMENT_FILE
