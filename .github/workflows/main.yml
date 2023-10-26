@@ -93,35 +93,10 @@ jobs:
 
     - name: Deploy to cluster
       id: cluster-deploy
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+        DEPLOYMENT_FILE: "k8s/deployment"
       run: |
-        echo "El sha de github deberia ser: ${{ github.sha }}"
-        kubectl get svc
-#        cat ~/.kube/config
-#        kubectl config view
-#       kubectl apply -f k8s/deployment.yaml
-
-
-
-  # deploy:
-
-  #   needs: createDockerImageAndPush
-
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-
-  #   - name: Fill in the new image ID in the Amazon ECS task definition
-  #     id: task-def
-  #     uses: aws-actions/amazon-ecs-render-task-definition@v1
-  #     with:
-  #       task-definition: ${{ env.ECS_TASK_DEFINITION }}
-  #       container-name: ${{ env.CONTAINER_NAME }}
-  #       image: ${{ steps.build-image.outputs.image }}
-
-  #   - name: Deploy Amazon ECS task definition
-  #     uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-  #     with:
-  #       task-definition: ${{ steps.task-def.outputs.task-definition }}
-  #       service: ${{ env.ECS_SERVICE }}
-  #       cluster: ${{ env.ECS_CLUSTER }}
-  #       wait-for-service-stability: true   
+        echo "El sha de github deberia ser: $IMAGE_TAG"
+        sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" $DEPLOYMENT_FILE
+        kubectl apply -f $DEPLOYMENT_FILE
