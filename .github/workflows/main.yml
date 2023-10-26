@@ -98,7 +98,7 @@ jobs:
         DEPLOYMENT_FILE: "k8s/deployment.yaml"
       run: |
         echo "El sha de github deberia ser: $IMAGE_TAG"
-        cat k8s/deployment.yaml
+        cat ../../k8s/deployment.yaml
 
 #        sed -i "s@<IMAGE_TAG>@$IMAGE_TAG@" $DEPLOYMENT_FILE
 
