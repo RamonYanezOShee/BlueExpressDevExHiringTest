@@ -68,6 +68,7 @@ Dentro de la carpeta helloworldapp
 # unit tests
 $ npm run test
 ```
+Nota: esta prueba comprueba el contenido del metodo get con el string ¡Hola Mundo!
 
 ### Invocacion
 Una vez corriendo la aplicacion, simplemete hay que llamar a la raiz de donde esta corriendo y para ello, se puede invocar de diversas formas:
@@ -117,7 +118,12 @@ Para gatillar el pipline se debe hacer un push al repositorio 'forkeado': https:
 ![Diagrama](/img/diagrama.io.jpg)
 
 ### Probando la aplicacion desde Internet
-La URL externa para probar esta aplicacion es:
+La URL donde quedo expuesta la aplicacion es:
+
 
 **http://a338868de4f7f4bf9a2db73eb17692ec-648861445.us-east-2.elb.amazonaws.com/helloworldapp**
 
+
+### Dashboard CloudWatch
+Se creo un dashboard simple en CloudWatch, el cual contiene con datos del cluster y logs
+![Dashboard](/img/dashboard.jpg)

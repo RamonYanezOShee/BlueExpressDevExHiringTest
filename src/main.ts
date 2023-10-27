@@ -4,7 +4,7 @@ import { LoggerService } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error','warn','debug'],
+    logger: ['error','warn','log'],
   });
   await app.listen(3000);
 }
